@@ -1,20 +1,89 @@
+import 'package:able_us/View/ServicesPage.dart';
+import 'package:able_us/View/homePage.dart';
 import 'package:flutter/material.dart';
 
-import 'src/app.dart';
-import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart';
+var pageIndex = 2;
+var barIndex = pageIndex;
+var previousIndex = 3;
+void main() {
+  runApp(const MainApp());
+}
 
-void main() async {
-  // Set up the SettingsController, which will glue user settings to multiple
-  // Flutter Widgets.
-  final settingsController = SettingsController(SettingsService());
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
-  // Load the user's preferred theme while the splash screen is displayed.
-  // This prevents a sudden theme change when the app is first displayed.
-  await settingsController.loadSettings();
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
 
-  // Run the app and pass in the SettingsController. The app listens to the
-  // SettingsController for changes, then passes it further down to the
-  // SettingsView.
-  runApp(MyApp(settingsController: settingsController));
+class _MainAppState extends State<MainApp> {
+  var pages = <Widget>[
+    HomePage(), //Community Page
+    HomePage(), // Alerts Page
+    HomePage(), // Home
+    HomePage(), //Reminders
+    HomePage(), //Profile
+    ServicesPage(),
+  ];
+  @override
+  Widget build(BuildContext context) {
+    if (pageIndex != previousIndex) {
+      setState(() {
+        previousIndex = pageIndex;
+      });
+    }
+    return MaterialApp(
+      home: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          iconSize: 40,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          enableFeedback: true,
+          elevation: 5,
+          selectedItemColor: const Color(0XffFB943B),
+          unselectedItemColor: const Color(0xff3EA4ED),
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              label: "Community",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: "Alerts",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage("Assets/Icons/Medicin Timer.png"),
+              ),
+              label: "Reminders",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: "Profile",
+            ),
+          ],
+          currentIndex: barIndex,
+          onTap: (int index) {
+            setState(() {
+              pageIndex = index;
+              if (pageIndex < 5) {
+                barIndex = pageIndex;
+              }
+            });
+          },
+        ),
+        body: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            pages[pageIndex],
+          ],
+        ),
+      ),
+    );
+  }
 }
